@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+:root {
+  /* Component tokens (referencing Tailwind theme values) */
+  --background: #FAF7F2;
+  --foreground: #2A2522;
+  --card: #FFFFFF;
+  --card-foreground: #2A2522;
+  --primary: #C2703E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8DFD0;
+  --secondary-foreground: #2A2522;
+  --muted: #E8DFD0;
+  --muted-foreground: #6B6460;
+  --accent: #7A8B6F;
+  --accent-foreground: #FFFFFF;
+  --border: #E0D8CE;
+  --input: #E0D8CE;
+  --ring: #C2703E;
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-amber-500: #C2703E;
+  --color-amber-600: #A85D32;
+  --color-amber-700: #8E4D28;
+  --color-amber-100: #F5E6D8;
+  --color-amber-50: #FBF3EC;
+  --color-sage-500: #7A8B6F;
+  --color-sage-600: #647558;
+  --color-sage-100: #E2E8DC;
+  --color-cream: #FAF7F2;
+  --color-sand: #E8DFD0;
+  --color-warm-charcoal: #2A2522;
+  --color-warm-brown: #1E1B18;
+  --color-warm-gray: #6B6460;
+  --color-warm-gray-light: #9B958F;
+
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* ── Base styles ── */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+/* ── Smooth scroll + hidden scrollbar ── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
+
+/* ── Selection color ── */
+::selection {
+  background-color: #F5E6D8;
+  color: #2A2522;
+}
+
+/* ── Focus ring ── */
+*:focus-visible {
+  outline: 2px solid #C2703E;
+  outline-offset: 2px;
+}
+
+/* ── Hero grid pattern ── */
+.hero-grid-pattern {
+  background-image:
+    linear-gradient(rgba(194, 112, 62, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(194, 112, 62, 0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Marquee animation ── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
