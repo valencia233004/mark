@@ -91,10 +91,10 @@ export default function Navbar() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`text-sm font-medium transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:bg-amber-500 after:transition-all ${
+                  className={`text-sm font-medium transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:bg-amber-500 after:transition-all after:duration-300 after:origin-left ${
                     isActive
                       ? `${textColor} after:w-full`
-                      : `${textMuted} hover:${textColor} after:w-0 hover:after:w-full`
+                      : `${textMuted} hover:${textColor} after:w-0 after:scale-x-0 hover:after:w-full hover:after:scale-x-100`
                   }`}
                 >
                   {link.label}

@@ -56,7 +56,7 @@ export default function Testimonials() {
               }}
             >
               {/* (#23 — hover shadow for consistency) */}
-              <Card className="border-border/70 bg-white hover:shadow-sm transition-shadow">
+              <Card className="border-border/70 bg-white card-lift">
                 <CardContent className="p-6 sm:p-8">
                   <MessageSquareQuote className="w-8 h-8 text-amber-500/40 mb-4" />
                   <blockquote className="text-base sm:text-lg italic text-warm-gray leading-relaxed">

@@ -56,7 +56,7 @@ export default function Certifications() {
               }}
             >
               {/* (#24 — added hover:shadow-sm for consistency) */}
-              <Card className="overflow-hidden border-border/70 hover:shadow-sm transition-shadow">
+              <Card className="overflow-hidden border-border/70 card-lift">
                 <div className="relative aspect-[4/3]">
                   <ImageWithFallback
                     src={cert.image}

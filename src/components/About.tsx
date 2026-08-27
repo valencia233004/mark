@@ -24,7 +24,7 @@ function LogoItem({
 
   return (
     <div
-      className="flex items-center gap-3 px-8"
+      className="flex items-center gap-3 px-8 transition-transform duration-200 hover:scale-110 hover:-translate-y-0.5"
       aria-hidden={ariaHidden || undefined}
     >
       {/* (#11 — fallback to text if CDN 404s) */}

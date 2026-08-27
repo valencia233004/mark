@@ -51,7 +51,7 @@ function ProjectCard({ project }: { project: Project }) {
 
   /* (#20 — toggle button wraps only the title row, not the entire card) */
   return (
-    <Card className="overflow-hidden border-border/70 transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden border-border/70 card-lift">
       {/* Image area — not interactive */}
       <div className="relative aspect-video">
         <ImageWithFallback

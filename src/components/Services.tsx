@@ -75,7 +75,7 @@ export default function Services() {
               >
                 {/* (#14 — removed hover:shadow-md to avoid false interactive cues) */}
                 {/* (#16 — CardDescription moved into CardHeader for tighter grouping) */}
-                <Card className="h-full transition-shadow duration-300 border-border/70 cursor-default">
+                <Card className="h-full border-border/70 cursor-default card-lift">
                   <CardHeader>
                     <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5 text-amber-600" />
