@@ -34,19 +34,35 @@ export const metadata: Metadata = {
     description:
       "I help businesses automate their lead follow-up, CRM, and client workflows using GoHighLevel, n8n, Zapier, and Make.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
+
+// Inline script to prevent dark mode flash (runs before paint)
+const themeScript = `
+  (function() {
+    try {
+      var stored = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch(e) {}
+  })();
+`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
+        {children}
+      </body>
     </html>
   );
 }

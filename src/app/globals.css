@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Component tokens */
+  /* ── Light palette ── */
   --background: #FAF7F2;
   --foreground: #2A2522;
   --card: #FFFFFF;
@@ -18,6 +18,33 @@
   --input: #E0D8CE;
   --ring: #C2703E;
   --radius: 0.625rem;
+}
+
+/* ── Dark palette ── */
+html.dark {
+  --background: #1A1714;
+  --foreground: #FAF7F2;
+  --card: #252220;
+  --card-foreground: #FAF7F2;
+  --primary: #D4844E;
+  --primary-foreground: #1A1714;
+  --secondary: #332E2A;
+  --secondary-foreground: #FAF7F2;
+  --muted: #332E2A;
+  --muted-foreground: #9B958F;
+  --accent: #8FA282;
+  --accent-foreground: #1A1714;
+  --border: #3A3530;
+  --input: #3A3530;
+  --ring: #D4844E;
+}
+html.dark {
+  --color-cream: #1A1714;
+  --color-sand: #2A2522;
+  --color-warm-charcoal: #FAF7F2;
+  --color-warm-brown: #0F0D0B;
+  --color-warm-gray: #9B958F;
+  --color-warm-gray-light: #6B6460;
 }
 
 @theme inline {
@@ -65,6 +92,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── Smooth scroll + hidden scrollbar ── */
@@ -74,21 +102,14 @@ html {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-html::-webkit-scrollbar {
-  display: none;
-}
+html::-webkit-scrollbar { display: none; }
 
-/* ── Selection color ── */
-::selection {
-  background-color: #F5E6D8;
-  color: #2A2522;
-}
+/* ── Selection ── */
+::selection { background-color: #F5E6D8; color: #2A2522; }
+html.dark ::selection { background-color: #5A3A20; color: #FAF7F2; }
 
 /* ── Focus ring ── */
-*:focus-visible {
-  outline: 2px solid #C2703E;
-  outline-offset: 2px;
-}
+*:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 /* ── Hero grid pattern ── */
 .hero-grid-pattern {
@@ -98,62 +119,151 @@ html::-webkit-scrollbar {
   background-size: 60px 60px;
 }
 
-/* ── Marquee animation ── */
+/* ── Marquee ── */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.animate-marquee {
-  animation: marquee 25s linear infinite;
+.animate-marquee { animation: marquee 25s linear infinite; }
+
+/* ── Glassmorphism utilities ── */
+.glass {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.glass-light {
+  background: rgba(250, 247, 242, 0.78);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.glass-dark {
+  background: rgba(26, 23, 20, 0.82);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.glass-panel {
+  background: rgba(250, 247, 242, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+}
+html.dark .glass-panel {
+  background: rgba(26, 23, 20, 0.5);
 }
 
 /* ── Form input focus glow ── */
-input:focus,
-textarea:focus {
-  border-color: #C2703E !important;
+input:focus, textarea:focus {
+  border-color: var(--ring) !important;
   box-shadow: 0 0 0 3px rgba(194, 112, 62, 0.15);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ── Interactive card lift ── */
+/* ── Card lift ── */
 .card-lift {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .card-lift:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(42, 37, 34, 0.08);
-  border-color: #C2703E;
+  border-color: var(--ring);
 }
 
-/* ── Button press effect ── */
+/* ── Button press ── */
 .btn-press {
   transition: transform 0.15s ease, background-color 0.2s ease;
 }
-.btn-press:hover {
-  transform: scale(1.03);
+.btn-press:hover { transform: scale(1.03); }
+.btn-press:active { transform: scale(0.97); }
+
+/* ── Button ripple ── */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
 }
-.btn-press:active {
-  transform: scale(0.97);
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), rgba(255,255,255,0.35) 0%, transparent 60%);
+  opacity: 0;
+  transform: scale(0);
+  transition: none;
+}
+.btn-ripple:active::after {
+  opacity: 1;
+  transform: scale(2.5);
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+/* ── Spotlight card glow ── */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    300px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(194, 112, 62, 0.08),
+    transparent 70%
+  );
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.spotlight-card:hover::before { opacity: 1; }
+
+/* ── Gradient underline ── */
+.gradient-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--ring), transparent);
+  transition: width 0.3s ease;
+}
+.gradient-underline:hover::after { width: 100%; }
+.gradient-underline.active::after { width: 100%; }
+
+/* ── Mask reveal for headings ── */
+@keyframes mask-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.mask-reveal {
+  clip-path: inset(0 100% 0 0);
+}
+.mask-reveal.revealed {
+  animation: mask-reveal 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+/* ── Ambient blob ── */
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(20px, -15px) scale(1.05); }
+  50% { transform: translate(-10px, 20px) scale(0.97); }
+  75% { transform: translate(15px, 10px) scale(1.03); }
+}
+.ambient-blob {
+  animation: blob-drift 60s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ── Prefers reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .animate-marquee {
-    animation: none;
-  }
-  .card-lift:hover {
-    transform: none;
-  }
-  .btn-press:hover,
-  .btn-press:active {
-    transform: none;
-  }
+  .animate-marquee { animation: none; }
+  .card-lift:hover { transform: none; }
+  .btn-press:hover, .btn-press:active { transform: none; }
+  .ambient-blob { animation: none; }
+  .mask-reveal { clip-path: none; }
+  .mask-reveal.revealed { animation: none; clip-path: none; }
 }
