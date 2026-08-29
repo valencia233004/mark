@@ -1,45 +1,51 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Stats from "@/components/Stats";
-import Services from "@/components/Services";
-import Process from "@/components/Process";
-import Work from "@/components/Work";
-import Testimonials from "@/components/Testimonials";
-import Certifications from "@/components/Certifications";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import ScrollProgress from "@/components/ScrollProgress";
-import BackToTop from "@/components/BackToTop";
-import PageTransition from "@/components/PageTransition";
-import SectionDivider from "@/components/SectionDivider";
+"use client";
+
+/* Paper Trail Systems: editorial Swiss layout, warm paper canvas, Copper Signal handoffs, and evidence-first content. */
+import type { ReactNode } from "react";
+import { useState } from "react";
+type IconProps = { size?: number; className?: string };
+const ArrowUpRight = ({ size = 16 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>↗</span>;
+const ArrowDownRight = ({ size = 16 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>↘</span>;
+const Check = ({ size = 15 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>✓</span>;
+const ChevronDown = ({ size = 16, className = "" }: IconProps) => <span aria-hidden="true" className={`icon-glyph chevron-glyph ${className}`} style={{ fontSize: size }}>⌄</span>;
+const Mail = ({ size = 17 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>@</span>;
+const Menu = ({ size = 24 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>☰</span>;
+const X = ({ size = 24 }: IconProps) => <span aria-hidden="true" className="icon-glyph" style={{ fontSize: size }}>×</span>;
+
+const tools = ["GoHighLevel", "n8n", "Zapier", "Make", "Google Sheets", "Slack", "Google Calendar", "Calendly", "Shopify", "Twilio"];
+const services = [
+  { n: "01", title: "CRM & pipeline setup", need: "For teams that cannot see where every inquiry sits.", deliver: "A clear pipeline, ownership rules, stages, tags, and views that make the next action obvious.", example: "A new inquiry is assigned, tagged, and given a follow-up owner before it reaches the inbox.", link: "Explore CRM setup" },
+  { n: "02", title: "Workflow automation", need: "For operators repeating the same follow-up and notification work.", deliver: "Triggers, conditions, validation, duplicate prevention, logs, and a human fallback.", example: "A missed call can create a task, alert a teammate, and start a timed follow-up sequence.", link: "Explore automation" },
+  { n: "03", title: "Funnel & landing page builds", need: "For service businesses whose forms stop before the CRM.", deliver: "Conversion-minded pages and forms connected directly to the pipeline and follow-up logic.", example: "An ad form writes clean data to the right source, pipeline, and notification route.", link: "Explore funnel builds" },
+  { n: "04", title: "Appointment booking automation", need: "For teams losing time to back-and-forth and no-shows.", deliver: "Booking, confirmation, reminder, reschedule, and handoff flows around your calendar.", example: "A booked call updates the CRM, sends the right reminders, and flags attendance for follow-up.", link: "Explore booking systems" },
+];
+const cases = [
+  { label: "ANONYMIZED • REAL ESTATE", title: "Lead pipeline with a faster first response", problem: "Leads from ads and the website were being manually checked, assigned, and followed up. The gap between inquiry and first contact was the leakage point.", architecture: "Capture → qualify → assign → sequence → book → report", tools: ["GoHighLevel", "Zapier", "Google Sheets"], result: "Verified result pending publication approval", note: "The existing portfolio states a reduction from four hours to under 90 seconds. Keep this card anonymized until John Mark confirms the metric, method, and client permission.", artifact: "jm-case-artifact_9518c65f.png" },
+  { label: "ANONYMIZED • SERVICE BUSINESS", title: "Onboarding handoffs that stay visible", problem: "New clients moved between forms, calendars, CRM records, and team chat with no shared status or clear owner.", architecture: "Intake → validate → create record → notify → schedule → handoff", tools: ["n8n", "GoHighLevel", "Slack", "Google Calendar"], result: "Outcome to be supplied", note: "Add the approved timeline, measurement method, and screenshot once the project record is cleared for publication.", artifact: "jm-workflow-board_44ea3e65.png" },
+  { label: "ANONYMIZED • E-COMMERCE", title: "Post-purchase feedback routed with care", problem: "Review and feedback requests were disconnected from order context, making follow-up inconsistent and hard to learn from.", architecture: "Order → wait → segment → send → record → human review", tools: ["Make", "Shopify", "GoHighLevel", "Twilio"], result: "Outcome to be supplied", note: "No result is shown until John Mark supplies an approved metric and confirms that the workflow artifact can be shared.", artifact: "jm-case-artifact_9518c65f.png" },
+];
+
+function SectionLabel({ index, children }: { index: string; children: ReactNode }) { return <p className="section-label"><span>{index}</span>{children}</p>; }
+function PrimaryButton({ children, href = "#contact" }: { children: ReactNode; href?: string }) { return <a className="btn btn-primary" href={href}>{children}<ArrowUpRight size={16} /></a>; }
+function WorkflowBoard() { return <div className="workflow-board" aria-label="Conceptual lead workflow diagram"><div className="board-top"><span>WORKFLOW MAP / 01</span><span className="status"><i /> CONCEPTUAL</span></div><div className="route-line" /><div className="nodes">{["Inquiry", "Qualify", "Assign", "Follow up", "Book"].map((x, i) => <div className="node-wrap" key={x}><div className={`node ${i === 3 ? "active" : ""}`}><span>0{i + 1}</span>{x}</div>{i < 4 && <ArrowRightStub />}</div>)}</div><div className="board-note note-one">watch this handoff</div><div className="board-note note-two">human review here</div><div className="board-foot"><span>data checked</span><span>owner visible</span><span>fallback ready</span></div></div> }
+function ArrowRightStub() { return <div className="arrow-stub" aria-hidden="true"><span /></div>; }
 
 export default function Home() {
-  return (
-    <PageTransition>
-      <ScrollProgress />
-      <Navbar />
-      <main className="flex-1">
-        <Hero />
-        <SectionDivider variant="wave" fillClassName="fill-background" />
-        <About />
-        <SectionDivider variant="angle" fillClassName="fill-[var(--color-warm-brown)]" className="opacity-5 dark:opacity-50" />
-        <Stats />
-        <SectionDivider variant="curve" fillClassName="fill-sand/40 dark:fill-[#0F0D0B]" />
-        <Services />
-        <SectionDivider variant="wave" fillClassName="fill-background" />
-        <Process />
-        <SectionDivider variant="angle" fillClassName="fill-background" />
-        <Work />
-        <SectionDivider variant="curve" fillClassName="fill-sand/40 dark:fill-[#0F0D0B]" />
-        <Testimonials />
-        <SectionDivider variant="wave" fillClassName="fill-background" />
-        <Certifications />
-        <SectionDivider variant="angle" fillClassName="fill-sand/40 dark:fill-[#0F0D0B]" />
-        <Contact />
-      </main>
-      <Footer />
-      <BackToTop />
-    </PageTransition>
-  );
+  const [menuOpen, setMenuOpen] = useState(false); const [openCase, setOpenCase] = useState(0); const [sent, setSent] = useState(false);
+  const nav = ["about", "services", "work", "process", "contact"];
+  return <div className="site-shell">
+    <header className="site-header"><a className="wordmark" href="#top"><img className="brand-mark" src="/assets/jm-monogram.png" alt="" /><span>John Mark</span></a><button className="menu-button" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button><nav className={menuOpen ? "nav-links open" : "nav-links"}>{nav.map(item => <a key={item} href={`#${item}`} onClick={() => setMenuOpen(false)}>{item}</a>)}<PrimaryButton>Book a workflow audit</PrimaryButton></nav></header>
+    <main id="top">
+      <section className="hero section-pad"><div className="hero-copy"><p className="eyebrow"><span className="pulse" /> AUTOMATION & CRM SYSTEMS SPECIALIST</p><h1>Find the handoff where good leads go quiet.</h1><p className="hero-lede">I build practical CRM, lead-routing, follow-up, and booking systems for service businesses that are tired of stitching the same work together by hand.</p><div className="hero-actions"><PrimaryButton>Book a workflow audit</PrimaryButton><a className="text-link" href="#work">See the work <ArrowDownRight size={17} /></a></div><p className="trust-line">A practical review of where leads, bookings, and staff time are being lost.</p></div><div className="hero-art"><WorkflowBoard /><span className="artifact-caption">Conceptual artifact — replace with approved system screenshot</span></div></section>
+      <section className="proof-strip"><span>Selected tools</span>{tools.slice(0, 6).map(t => <b key={t}>{t}</b>)}<span className="proof-more">+ four more in the toolkit</span></section>
+      <section id="about" className="section-pad about-section"><div className="section-intro"><SectionLabel index="01">About the operator</SectionLabel><h2>Systems should make the next decision easier.</h2></div><div className="about-grid"><div className="portrait-wrap"><img src="/assets/jm-portrait-placeholder.png" alt="Conceptual portrait placeholder for John Mark" /><span>Portrait placeholder — replace with approved photo</span></div><div className="about-copy"><p className="lead-paragraph">I’m John Mark. I work in the space between a business owner’s intent and the messy middle where forms, calendars, CRMs, and team notifications stop agreeing with each other.</p><p>My job is to make that middle legible: what starts the work, where the data goes, who owns the next step, what happens when something fails, and when a person should take over. I work best with service businesses that want a dependable system they can understand and maintain.</p><div className="care-box"><p className="mini-label">WHAT I CARE ABOUT IN EVERY BUILD</p>{["Reliability over cleverness", "Documentation someone will actually use", "Human handoff when judgment matters", "Error handling and visible logs", "An outcome we can measure"].map(x => <div className="care-item" key={x}><Check size={15} />{x}</div>)}</div></div></div></section>
+      <section id="services" className="paper-band section-pad"><div className="section-intro wide"><SectionLabel index="02">Services</SectionLabel><h2>Less chasing. More visible work.</h2><p>Choose the point of friction that is costing your team attention. The build follows the process, not the tool list.</p></div><div className="services-grid">{services.map(s => <article className="service-card" key={s.n}><div className="card-head"><span>{s.n}</span><ArrowUpRight size={18} /></div><h3>{s.title}</h3><p className="service-need">{s.need}</p><div className="card-detail"><b>Delivered</b><p>{s.deliver}</p><b>Example</b><p>{s.example}</p></div><a href="#contact" className="card-link">{s.link} <ArrowUpRight size={15} /></a></article>)}</div></section>
+      <section className="thinking section-pad"><div className="thinking-copy"><SectionLabel index="03">Automation thinking</SectionLabel><h2>Good automation is not just a chain of actions.</h2><p>It is a set of decisions that stays understandable when the normal path changes. Every useful build accounts for the quiet details: clean data, duplicate prevention, fallback notifications, logging, and a clear human handoff.</p><p className="annotation">// build for the exception, not just the demo</p></div><div className="thinking-list">{["Triggers start the right work", "Conditions protect the wrong record", "Validation keeps bad data out", "Logs make the invisible inspectable", "Human handoff keeps judgment in the loop"].map((x, i) => <div className="thinking-row" key={x}><span>0{i + 1}</span><b>{x}</b><ArrowUpRight size={16} /></div>)}</div></section>
+      <section id="process" className="process-band section-pad"><div className="section-intro wide"><SectionLabel index="04">Process</SectionLabel><h2>A working sequence, not a mystery box.</h2></div><div className="process-track">{[{n:"01",t:"Discovery",d:"Inspect the current workflow and identify leakage."},{n:"02",t:"System design",d:"Map triggers, conditions, data, ownership, and exceptions."},{n:"03",t:"Build & test",d:"Connect tools, test normal and failure cases, and document the build."},{n:"04",t:"Launch & support",d:"Train the team, monitor early performance, and improve the system."}].map((p, i) => <div className="process-step" key={p.n}><span className="step-n">{p.n}</span><div><h3>{p.t}</h3><p>{p.d}</p></div>{i < 3 && <ArrowRightStub />}</div>)}</div></section>
+      <section id="work" className="section-pad work-section"><div className="section-intro wide"><SectionLabel index="05">Selected work</SectionLabel><h2>Documented systems, not vague success stories.</h2><p>Client names, screenshots, and measurements stay private until they are approved for publication. The structure below shows how each project is evaluated.</p></div><div className="case-list">{cases.map((c, i) => <article className={`case-card ${openCase === i ? "expanded" : ""}`} key={c.title}><button className="case-summary" onClick={() => setOpenCase(openCase === i ? -1 : i)} aria-expanded={openCase === i}><div><span className="case-label">{c.label}</span><h3>{c.title}</h3><p>{c.problem}</p></div><ChevronDown className="chevron" /></button>{openCase === i && <div className="case-detail"><div className="case-meta"><div><b>Architecture</b><p>{c.architecture}</p></div><div><b>Tools</b><p>{c.tools.join(" · ")}</p></div><div><b>Result</b><p>{c.result}</p></div></div><div className="case-artifact"><img src={`/assets/${c.artifact}`} alt={`Conceptual anonymized artifact for ${c.title}`} /><span>{c.note}</span></div></div>}</article>)}</div></section>
+      <section className="credentials-band section-pad"><div><SectionLabel index="06">Supporting proof</SectionLabel><h2>Credentials support the practice. They do not replace the work.</h2></div><div className="credential-grid">{["GoHighLevel Certified Admin", "n8n Workflow Automation", "Zapier Automation Certification"].map((c, i) => <div className="credential" key={c}><span>0{i + 1}</span><b>{c}</b><small>Credential details to be verified</small></div>)}</div></section>
+      <section className="fit-section section-pad"><div className="fit-card"><SectionLabel index="07">Fit & FAQ</SectionLabel><h2>Good fit is a clear workflow and an honest scope.</h2><div className="fit-cols"><div><h3>Who I work best with</h3><p>Service businesses with a real lead or booking process, a willing process owner, and the patience to document what happens outside the happy path.</p></div><div><h3>Who I may not be right for</h3><p>Teams looking for a one-click promise, a tool swap without process work, or unsupported claims dressed up as proof.</p></div><div><h3>Common questions</h3><p>Access is scoped to the build. Timelines, revisions, maintenance, support, and client-data handling are agreed in writing before work begins.</p></div></div></div></section>
+      <section id="contact" className="contact-band section-pad"><div className="contact-copy"><SectionLabel index="08">Let’s inspect the break</SectionLabel><h2>Bring me the messy middle.</h2><p>Tell me where a lead, booking, or handoff gets stuck. I’ll reply with the next sensible question, not a generic pitch.</p><a className="email-link" href="mailto:valenciajmark23@gmail.com"><Mail size={17} /> valenciajmark23@gmail.com</a></div><form className="contact-form" onSubmit={e => { e.preventDefault(); setSent(true); }} aria-label="Workflow audit inquiry form"><label>Name<input required name="name" placeholder="Your name" /></label><label>Email<input required type="email" name="email" placeholder="you@example.com" /></label><label>Business type<input required name="business" placeholder="e.g. real estate, agency, clinic" /></label><label>Biggest workflow problem<textarea required name="problem" placeholder="What currently gets missed, delayed, or repeated?" /></label><label>Optional budget / timeline<input name="budget" placeholder="A range or target month is enough" /></label><button className="btn btn-primary" type="submit">{sent ? "Message noted — thank you" : "Request a workflow audit"}<ArrowUpRight size={16} /></button>{sent ? <p className="form-success" role="status">Thanks — this demo form is ready to connect to your preferred inbox or form endpoint.</p> : <p className="form-note">This front-end form is currently a placeholder for the final submission endpoint.</p>}</form></section>
+    </main><footer className="footer"><a className="wordmark" href="#top"><img className="brand-mark" src="/assets/jm-monogram.png" alt="" /><span>John Mark</span></a><p>Built with care, documented clearly, and designed to keep working after launch.</p><div><a href="#about">About</a><a href="#work">Work</a><a href="mailto:valenciajmark23@gmail.com">Email</a></div><small>© 2026 John Mark Valencia. Claims and artifacts shown as placeholders require approval.</small></footer>
+  </div>;
 }

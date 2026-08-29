@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import CustomCursor from "@/components/CustomCursor";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -36,6 +35,7 @@ export const metadata: Metadata = {
       "I help businesses automate their lead follow-up, CRM, and client workflows using GoHighLevel, n8n, Zapier, and Make.",
   },
   robots: { index: true, follow: true },
+  icons: { icon: "/assets/jm-monogram.png" },
 };
 
 // Inline script to prevent dark mode flash (runs before paint)
@@ -63,7 +63,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         {children}
-        <CustomCursor />
       </body>
     </html>
   );
