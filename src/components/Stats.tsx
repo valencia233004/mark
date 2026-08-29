@@ -2,14 +2,14 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { Zap, Clock, Layers, Globe } from "lucide-react";
+import { Workflow, Timer, Puzzle, Earth } from "lucide-react";
 import SectionEyebrow from "@/components/SectionEyebrow";
 
 const stats = [
-  { value: 50, suffix: "+", label: "Workflows Automated", icon: Zap },
-  { value: 500, suffix: "+", label: "Hours Saved for Clients", icon: Clock },
-  { value: 10, suffix: "+", label: "Tools Integrated", icon: Layers },
-  { value: 4, suffix: "", label: "Countries Served", icon: Globe },
+  { value: 50, suffix: "+", label: "Workflows Automated", icon: Workflow },
+  { value: 500, suffix: "+", label: "Hours Saved for Clients", icon: Timer },
+  { value: 10, suffix: "+", label: "Tools Integrated", icon: Puzzle },
+  { value: 4, suffix: "", label: "Countries Served", icon: Earth },
 ];
 
 function AnimatedCounter({ target, suffix, isInView }: { target: number; suffix: string; isInView: boolean }) {

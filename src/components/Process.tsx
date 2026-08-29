@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { MessageCircle, PenTool, Wrench, Rocket } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { MessageCircle, PenTool, Wrench, Rocket, ArrowRight, ChevronRight } from "lucide-react";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import MaskReveal from "@/components/MaskReveal";
 
@@ -33,6 +33,141 @@ const steps = [
   },
 ];
 
+/* ── Animated step circle: fills with amber as user scrolls past ── */
+function StepCircle({ number, isFilled }: { number: string; isFilled: boolean }) {
+  return (
+    <div
+      className={`w-14 h-14 rounded-full border-2 flex items-center justify-center bg-card z-10 transition-all duration-700 ${
+        isFilled
+          ? "border-amber-500 bg-amber-500/15 shadow-[0_0_12px_rgba(194,112,62,0.25)]"
+          : "border-amber-500/50"
+      }`}
+    >
+      <span
+        className={`font-[family-name:var(--font-display)] text-sm font-bold transition-colors duration-500 ${
+          isFilled ? "text-amber-500" : "text-amber-500/60"
+        }`}
+      >
+        {number}
+      </span>
+    </div>
+  );
+}
+
+/* ── Curved SVG path for desktop ── */
+function DesktopCurvedPath({ progress }: { progress: number }) {
+  const path = "M 60 50 C 180 20, 240 80, 340 50 S 480 20, 620 50 S 760 80, 900 50";
+
+  return (
+    <svg
+      viewBox="0 0 960 100"
+      fill="none"
+      className="absolute top-0 left-0 w-full h-[100px]"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      {/* Dashed background path */}
+      <path
+        d={path}
+        stroke="var(--border)"
+        strokeWidth="2"
+        strokeDasharray="8 6"
+        strokeOpacity="0.5"
+        fill="none"
+      />
+      {/* Animated gradient overlay */}
+      <defs>
+        <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#C2703E" />
+          <stop offset="50%" stopColor="#D4A574" />
+          <stop offset="100%" stopColor="#C2703E" />
+        </linearGradient>
+        <clipPath id="pathClip">
+          <rect x="0" y="0" width={`${progress * 100}%`} height="100%" />
+        </clipPath>
+      </defs>
+      <path
+        d={path}
+        stroke="url(#pathGradient)"
+        strokeWidth="2.5"
+        fill="none"
+        clipPath="url(#pathClip)"
+      />
+      {/* Small dots along the path */}
+      {[0.12, 0.25, 0.37, 0.5, 0.62, 0.75, 0.87].map((pos) => {
+        const x = 60 + pos * 840;
+        const y = 50 + Math.sin(pos * Math.PI * 3) * 15;
+        return (
+          <circle
+            key={pos}
+            cx={x}
+            cy={y}
+            r="2.5"
+            fill={progress >= pos ? "#C2703E" : "var(--border)"}
+            opacity={progress >= pos ? 0.8 : 0.3}
+            className="transition-all duration-500"
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+/* ── Chevron connectors between desktop steps ── */
+function StepConnector({ filled }: { filled: boolean }) {
+  return (
+    <div className="hidden md:flex items-center justify-center pt-4">
+      <div
+        className={`transition-colors duration-500 ${
+          filled ? "text-amber-500" : "text-border"
+        }`}
+      >
+        <ChevronRight className="w-5 h-5" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Vertical curved path for mobile ── */
+function MobileCurvedPath({ progress }: { progress: number }) {
+  const path = "M 25 30 C 25 90, 35 90, 35 170 S 25 250, 25 310 S 35 390, 35 450";
+
+  return (
+    <svg
+      viewBox="0 0 50 480"
+      fill="none"
+      className="absolute left-[27px] top-0 h-full w-[50px]"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        d={path}
+        stroke="var(--border)"
+        strokeWidth="2"
+        strokeDasharray="6 5"
+        strokeOpacity="0.4"
+        fill="none"
+      />
+      <defs>
+        <linearGradient id="mobilePathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#C2703E" />
+          <stop offset="100%" stopColor="#D4A574" />
+        </linearGradient>
+        <clipPath id="mobilePathClip">
+          <rect x="0" y="0" width="100%" height={`${progress * 100}%`} />
+        </clipPath>
+      </defs>
+      <path
+        d={path}
+        stroke="url(#mobilePathGradient)"
+        strokeWidth="2.5"
+        fill="none"
+        clipPath="url(#mobilePathClip)"
+      />
+    </svg>
+  );
+}
+
 export default function Process() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -40,18 +175,26 @@ export default function Process() {
     target: ref,
     offset: ["start end", "end center"],
   });
-  const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  // Track scroll progress in React state so child components re-render
+  const [progress, setProgress] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => setProgress(v));
+
+  // Precompute which steps are filled
+  const filledSteps = steps.map((_, i) => progress >= (i + 0.5) / steps.length);
 
   return (
     <section
       id="process"
       ref={ref}
-      className="py-20 md:py-28 bg-background"
+      className="py-20 md:py-28 bg-background relative overflow-hidden"
       role="region"
       aria-label="My work process"
     >
-      <div className="mx-auto max-w-6xl px-6">
+      {/* Dotted grid background */}
+      <div className="absolute inset-0 dotted-grid-bg opacity-[0.35] dark:opacity-[0.15] pointer-events-none" aria-hidden="true" />
+
+      <div className="mx-auto max-w-6xl px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -68,24 +211,21 @@ export default function Process() {
           </p>
         </motion.div>
 
-        {/* Desktop: horizontal timeline */}
+        {/* Desktop: horizontal timeline with curved path */}
         <div className="hidden md:block mt-14">
-          {/* Connecting line */}
-          <div className="relative mb-10">
-            <div className="h-[2px] bg-border/50 w-full rounded-full" />
-            <motion.div
-              className="absolute top-0 left-0 h-[2px] rounded-full"
-              style={{
-                width: lineWidth,
-                background: "linear-gradient(90deg, #C2703E, #D4A574)",
-              }}
-            />
+          {/* Curved connecting path */}
+          <div className="relative h-[100px] mb-4">
+            <DesktopCurvedPath progress={progress} />
           </div>
 
-          <div className="grid grid-cols-4 gap-8">
+          <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] gap-4 items-start">
             {steps.map((step, i) => {
               const Icon = step.icon;
-              return (
+              const staggerOffset = i % 2 === 0 ? 0 : 24;
+              return [
+                ...(i > 0 ? [
+                  <StepConnector key={`connector-${i}`} filled={progress >= i / steps.length} />
+                ] : []),
                 <motion.div
                   key={step.number}
                   initial={{ opacity: 0, y: 30 }}
@@ -95,40 +235,29 @@ export default function Process() {
                     delay: 0.3 + i * 0.15,
                     ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
                   }}
+                  style={{ marginTop: staggerOffset }}
                 >
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full border-2 border-amber-500 flex items-center justify-center mb-4 bg-card">
-                      <span className="font-[family-name:var(--font-display)] text-sm font-bold text-amber-500">
-                        {step.number}
-                      </span>
-                    </div>
-                    <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-3">
+                    <StepCircle number={step.number} isFilled={filledSteps[i]} />
+                    <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-3 mt-4">
                       <Icon className="w-5 h-5 text-amber-600 dark:text-amber-500" />
                     </div>
                     <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground">
                       {step.title}
                     </h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-[200px]">
                       {step.description}
                     </p>
                   </div>
-                </motion.div>
-              );
-            })}
+                </motion.div>,
+              ];
+            }).flat()}
           </div>
         </div>
 
-        {/* Mobile: vertical timeline */}
+        {/* Mobile: vertical timeline with curved path */}
         <div className="md:hidden mt-10 relative">
-          {/* Vertical line */}
-          <div className="absolute left-7 top-0 bottom-0 w-[2px] bg-border/50" />
-          <motion.div
-            className="absolute left-7 top-0 w-[2px] rounded-full"
-            style={{
-              height: lineHeight,
-              background: "linear-gradient(180deg, #C2703E, #D4A574)",
-            }}
-          />
+          <MobileCurvedPath progress={progress} />
 
           <div className="space-y-10">
             {steps.map((step, i) => {
@@ -145,10 +274,8 @@ export default function Process() {
                   }}
                   className="flex gap-6"
                 >
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full border-2 border-amber-500 flex items-center justify-center bg-card z-10">
-                    <span className="font-[family-name:var(--font-display)] text-sm font-bold text-amber-500">
-                      {step.number}
-                    </span>
+                  <div className="flex-shrink-0">
+                    <StepCircle number={step.number} isFilled={filledSteps[i]} />
                   </div>
                   <div className="pt-2">
                     <div className="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-2">
@@ -166,6 +293,22 @@ export default function Process() {
             })}
           </div>
         </div>
+
+        {/* CTA below steps */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          className="mt-12 text-center"
+        >
+          <a
+            href="#contact"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors group"
+          >
+            Ready to start?
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

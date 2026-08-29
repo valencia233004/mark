@@ -332,6 +332,12 @@ input:focus, textarea:focus {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
+/* ── Dotted grid background ── */
+.dotted-grid-bg {
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 /* ── Prefers reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import ImageWithFallback from "@/components/ImageWithFallback";
-import { Clock } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import TiltCard from "@/components/TiltCard";
 import MaskReveal from "@/components/MaskReveal";
 import SectionEyebrow from "@/components/SectionEyebrow";
@@ -39,7 +39,7 @@ export default function Certifications() {
               Certifications
             </h2>
           </MaskReveal>
-          <p className="mt-3 text-muted-foreground max-w-xl">Credentials I&apos;m currently pursuing.</p>
+          <p className="mt-3 text-muted-foreground max-w-xl">Credentials I&apos;ve earned.</p>
         </motion.div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,8 +61,8 @@ export default function Certifications() {
                       fallbackClassName="w-full h-full aspect-[4/3]"
                     />
                     <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-sage-500/90 text-white backdrop-blur-sm">
-                      <Clock size={12} />
-                      In progress
+                      <CheckCircle2 size={12} />
+                      Completed
                     </div>
                   </div>
                   <div className="p-5">

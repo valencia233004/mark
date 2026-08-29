@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
+import { motion, useInView } from "framer-motion";
 import SectionWrapper from "@/components/SectionWrapper";
 import MaskReveal from "@/components/MaskReveal";
 import SectionEyebrow from "@/components/SectionEyebrow";
@@ -17,7 +18,18 @@ const toolLogos = [
   { name: "Airtable", url: "https://cdn.simpleicons.org/airtable", brandColor: "rgba(24,119,242,0.05)" },
 ];
 
-const textSkills = ["CRM Setup", "Workflow Automation"];
+const textSkills = [
+  "CRM Setup",
+  "Workflow Automation",
+  "Lead Pipeline Building",
+  "Funnel & Landing Pages",
+  "Appointment Booking Systems",
+  "Client Onboarding Automation",
+  "Data Sync & Reporting",
+  "SMS & Email Sequences",
+  "No-Show Prevention",
+  "Review Collection Automation",
+];
 
 function LogoItem({ logo, ariaHidden = false }: { logo: (typeof toolLogos)[number]; ariaHidden?: boolean }) {
   const [hasError, setHasError] = useState(false);
@@ -66,7 +78,24 @@ function LogoMarquee() {
   );
 }
 
+const skillVariants = {
+  hidden: { opacity: 0, y: 12, scale: 0.95 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.35,
+      delay: 0.08 * i,
+      ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
+    },
+  }),
+};
+
 export default function About() {
+  const skillsRef = useRef<HTMLDivElement>(null);
+  const skillsInView = useInView(skillsRef, { once: true, margin: "-40px" });
+
   return (
     <SectionWrapper id="about" className="py-20 md:py-28 bg-background">
       <div className="mx-auto max-w-3xl px-6">
@@ -91,12 +120,19 @@ export default function About() {
 
         <LogoMarquee />
 
-        <div className="mt-5 flex flex-wrap gap-3" role="list" aria-label="Additional skills">
-          {textSkills.map((skill) => (
-            <span key={skill} role="listitem"
-              className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-sage-100 dark:bg-sage-500/10 text-sage-600 dark:text-sage-500 border border-sage-500/20 cursor-default">
+        <div ref={skillsRef} className="mt-5 flex flex-wrap gap-3" role="list" aria-label="Additional skills">
+          {textSkills.map((skill, i) => (
+            <motion.span
+              key={skill}
+              role="listitem"
+              custom={i}
+              initial="hidden"
+              animate={skillsInView ? "visible" : "hidden"}
+              variants={skillVariants}
+              className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-sage-100 dark:bg-sage-500/10 text-sage-600 dark:text-sage-500 border border-sage-500/20 cursor-default"
+            >
               {skill}
-            </span>
+            </motion.span>
           ))}
         </div>
       </div>
