@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useInView, useScroll, useMotionValueEvent } from "framer-motion";
 import { MessageCircle, PenTool, Wrench, Rocket, ArrowRight, ChevronRight } from "lucide-react";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import MaskReveal from "@/components/MaskReveal";
+import { animate, stagger } from "animejs";
 
 const steps = [
   {
@@ -54,9 +55,31 @@ function StepCircle({ number, isFilled }: { number: string; isFilled: boolean })
   );
 }
 
-/* ── Curved SVG path for desktop ── */
+/* ── Desktop SVG path with anime.js stroke-dashoffset drawing ── */
 function DesktopCurvedPath({ progress }: { progress: number }) {
-  const path = "M 60 50 C 180 20, 240 80, 340 50 S 480 20, 620 50 S 760 80, 900 50";
+  const pathRef = useRef<SVGPathElement>(null);
+  const bgPathRef = useRef<SVGPathElement>(null);
+  const [pathLength, setPathLength] = useState(0);
+  const pathD = "M 60 50 C 180 20, 240 80, 340 50 S 480 20, 620 50 S 760 80, 900 50";
+
+  useEffect(() => {
+    if (pathRef.current) {
+      const len = pathRef.current.getTotalLength();
+      setPathLength(len);
+      pathRef.current.style.strokeDasharray = `${len}`;
+      pathRef.current.style.strokeDashoffset = `${len}`;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!pathRef.current || pathLength === 0) return;
+
+    animate(pathRef.current, {
+      strokeDashoffset: pathLength * (1 - progress),
+      ease: "out(2)",
+      duration: 100,
+    });
+  }, [progress, pathLength]);
 
   return (
     <svg
@@ -68,30 +91,29 @@ function DesktopCurvedPath({ progress }: { progress: number }) {
     >
       {/* Dashed background path */}
       <path
-        d={path}
+        ref={bgPathRef}
+        d={pathD}
         stroke="var(--border)"
         strokeWidth="2"
         strokeDasharray="8 6"
         strokeOpacity="0.5"
         fill="none"
       />
-      {/* Animated gradient overlay */}
+      {/* Animated gradient path drawn via anime.js stroke-dashoffset */}
       <defs>
         <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#C2703E" />
           <stop offset="50%" stopColor="#D4A574" />
           <stop offset="100%" stopColor="#C2703E" />
         </linearGradient>
-        <clipPath id="pathClip">
-          <rect x="0" y="0" width={`${progress * 100}%`} height="100%" />
-        </clipPath>
       </defs>
       <path
-        d={path}
+        ref={pathRef}
+        d={pathD}
         stroke="url(#pathGradient)"
         strokeWidth="2.5"
         fill="none"
-        clipPath="url(#pathClip)"
+        strokeLinecap="round"
       />
       {/* Small dots along the path */}
       {[0.12, 0.25, 0.37, 0.5, 0.62, 0.75, 0.87].map((pos) => {
@@ -128,9 +150,30 @@ function StepConnector({ filled }: { filled: boolean }) {
   );
 }
 
-/* ── Vertical curved path for mobile ── */
+/* ── Mobile SVG path with anime.js stroke-dashoffset ── */
 function MobileCurvedPath({ progress }: { progress: number }) {
-  const path = "M 25 30 C 25 90, 35 90, 35 170 S 25 250, 25 310 S 35 390, 35 450";
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pathLength, setPathLength] = useState(0);
+  const pathD = "M 25 30 C 25 90, 35 90, 35 170 S 25 250, 25 310 S 35 390, 35 450";
+
+  useEffect(() => {
+    if (pathRef.current) {
+      const len = pathRef.current.getTotalLength();
+      setPathLength(len);
+      pathRef.current.style.strokeDasharray = `${len}`;
+      pathRef.current.style.strokeDashoffset = `${len}`;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!pathRef.current || pathLength === 0) return;
+
+    animate(pathRef.current, {
+      strokeDashoffset: pathLength * (1 - progress),
+      ease: "out(2)",
+      duration: 100,
+    });
+  }, [progress, pathLength]);
 
   return (
     <svg
@@ -141,7 +184,7 @@ function MobileCurvedPath({ progress }: { progress: number }) {
       aria-hidden="true"
     >
       <path
-        d={path}
+        d={pathD}
         stroke="var(--border)"
         strokeWidth="2"
         strokeDasharray="6 5"
@@ -153,16 +196,14 @@ function MobileCurvedPath({ progress }: { progress: number }) {
           <stop offset="0%" stopColor="#C2703E" />
           <stop offset="100%" stopColor="#D4A574" />
         </linearGradient>
-        <clipPath id="mobilePathClip">
-          <rect x="0" y="0" width="100%" height={`${progress * 100}%`} />
-        </clipPath>
       </defs>
       <path
-        d={path}
+        ref={pathRef}
+        d={pathD}
         stroke="url(#mobilePathGradient)"
         strokeWidth="2.5"
         fill="none"
-        clipPath="url(#mobilePathClip)"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -213,7 +254,7 @@ export default function Process() {
 
         {/* Desktop: horizontal timeline with curved path */}
         <div className="hidden md:block mt-14">
-          {/* Curved connecting path */}
+          {/* Curved connecting path — anime.js stroke-dashoffset */}
           <div className="relative h-[100px] mb-4">
             <DesktopCurvedPath progress={progress} />
           </div>

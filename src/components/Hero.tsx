@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import WorkflowGraphic from "@/components/WorkflowGraphic";
 import MagneticWrapper from "@/components/MagneticWrapper";
+import { animate, stagger } from "animejs";
 
 const rotatingPhrases = [
   "hours every week.",
@@ -31,6 +32,49 @@ const lineVariants = {
     },
   }),
 };
+
+/* ── Anime.js letter-by-letter text reveal ── */
+function AnimatedHeadlineLine({ text, delay = 0 }: { text: string; delay?: number }) {
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Short delay to ensure DOM is mounted
+    const timer = setTimeout(() => setReady(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!ready || !containerRef.current) return;
+
+    const chars = containerRef.current.querySelectorAll(".anime-char");
+    if (chars.length === 0) return;
+
+    animate(chars, {
+      opacity: [0, 1],
+      translateY: [14, 0],
+      rotateX: [40, 0],
+      ease: "out(3)",
+      duration: 700,
+      delay: stagger(30, { start: delay }),
+    });
+  }, [ready, delay]);
+
+  return (
+    <span ref={containerRef} className="block" aria-label={text}>
+      {text.split("").map((char, i) => (
+        <span
+          key={i}
+          className="anime-char inline-block opacity-0"
+          style={{ willChange: "transform, opacity" }}
+          aria-hidden="true"
+        >
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -72,19 +116,15 @@ export default function Hero() {
           {/* Text with parallax */}
           <motion.div className="flex-1 text-center md:text-left" style={{ y: textY }}>
             <h1 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-bold text-cream leading-tight tracking-tight">
+              {/* Letter-by-letter anime.js lines */}
               {headlineLines.map((line, i) => (
-                <motion.span
+                <AnimatedHeadlineLine
                   key={i}
-                  className="block"
-                  custom={i}
-                  initial="hidden"
-                  animate="visible"
-                  variants={lineVariants}
-                >
-                  {line.text}
-                </motion.span>
+                  text={line.text}
+                  delay={150 + i * 350}
+                />
               ))}
-              {/* Highlighted rotating line */}
+              {/* Highlighted rotating line — keeps Framer Motion for the swap */}
               <motion.span
                 className="block relative"
                 custom={2}

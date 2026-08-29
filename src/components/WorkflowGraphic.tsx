@@ -1,12 +1,16 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { animate, stagger } from "animejs";
 
 interface WorkflowGraphicProps {
   className?: string;
 }
 
 export default function WorkflowGraphic({ className = "" }: WorkflowGraphicProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+
   const nodes = [
     { cx: 40, cy: 30 },
     { cx: 120, cy: 60 },
@@ -30,8 +34,51 @@ export default function WorkflowGraphic({ className = "" }: WorkflowGraphicProps
     [4, 7],
   ];
 
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const svgLines = svgRef.current.querySelectorAll(".wf-line");
+    const svgNodes = svgRef.current.querySelectorAll(".wf-node");
+    const svgPulses = svgRef.current.querySelectorAll(".wf-pulse");
+
+    // Animate lines drawing in with stroke-dashoffset
+    svgLines.forEach((line) => {
+      const length = (line as SVGLineElement).getTotalLength?.() || 200;
+      (line as SVGLineElement).style.strokeDasharray = `${length}`;
+      (line as SVGLineElement).style.strokeDashoffset = `${length}`;
+    });
+
+    // Animate lines drawing in — strokeDashoffset already set above
+    animate(svgLines, {
+      strokeDashoffset: 0,
+      ease: "inOut(2)",
+      duration: 1200,
+      delay: stagger(100, { start: 600 }),
+    });
+
+    // Animate nodes scaling in
+    animate(svgNodes, {
+      scale: [0, 1],
+      opacity: [0, 1],
+      ease: "out(3)",
+      duration: 800,
+      delay: stagger(80, { start: 400 }),
+    });
+
+    // Start pulses after nodes are in
+    animate(svgPulses, {
+      scale: [1, 2],
+      opacity: [0.3, 0],
+      ease: "out(2)",
+      duration: 2000,
+      delay: stagger(500, { start: 1800 }),
+      loop: true,
+    });
+  }, []);
+
   return (
     <svg
+      ref={svgRef}
       viewBox="0 0 260 210"
       fill="none"
       className={className}
@@ -39,8 +86,9 @@ export default function WorkflowGraphic({ className = "" }: WorkflowGraphicProps
     >
       {/* Lines */}
       {lines.map(([from, to], i) => (
-        <motion.line
+        <line
           key={`line-${i}`}
+          className="wf-line"
           x1={nodes[from].cx}
           y1={nodes[from].cy}
           x2={nodes[to].cx}
@@ -48,39 +96,28 @@ export default function WorkflowGraphic({ className = "" }: WorkflowGraphicProps
           stroke="#C2703E"
           strokeWidth="1.5"
           strokeOpacity="0.25"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{
-            duration: 1,
-            delay: 0.8 + i * 0.1,
-            ease: "easeOut",
-          }}
         />
       ))}
 
       {/* Nodes */}
       {nodes.map((node, i) => (
-        <motion.circle
+        <circle
           key={`node-${i}`}
+          className="wf-node"
           cx={node.cx}
           cy={node.cy}
           r={i === 0 || i === 3 ? 6 : 4}
           fill={i === 0 || i === 3 ? "#C2703E" : "#7A8B6F"}
           fillOpacity={i === 0 || i === 3 ? 0.5 : 0.35}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            duration: 0.4,
-            delay: 0.6 + i * 0.08,
-            ease: "easeOut",
-          }}
+          style={{ opacity: 0, transformOrigin: `${node.cx}px ${node.cy}px` }}
         />
       ))}
 
       {/* Pulsing accents on key nodes */}
       {[0, 3].map((idx) => (
-        <motion.circle
+        <circle
           key={`pulse-${idx}`}
+          className="wf-pulse"
           cx={nodes[idx].cx}
           cy={nodes[idx].cy}
           r={6}
@@ -88,17 +125,7 @@ export default function WorkflowGraphic({ className = "" }: WorkflowGraphicProps
           stroke="#C2703E"
           strokeWidth="1"
           strokeOpacity="0.3"
-          initial={{ scale: 1, opacity: 0.3 }}
-          animate={{
-            scale: [1, 1.8, 1],
-            opacity: [0.3, 0, 0.3],
-          }}
-          transition={{
-            duration: 3,
-            delay: 1.5 + idx * 0.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          style={{ transformOrigin: `${nodes[idx].cx}px ${nodes[idx].cy}px` }}
         />
       ))}
     </svg>
