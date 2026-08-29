@@ -44,7 +44,7 @@ html.dark {
   --color-warm-charcoal: #FAF7F2;
   --color-warm-brown: #0F0D0B;
   --color-warm-gray: #9B958F;
-  --color-warm-gray-light: #6B6460;
+  --color-warm-gray-light: #B0AAA4;
 }
 
 @theme inline {
@@ -77,7 +77,7 @@ html.dark {
   --color-warm-charcoal: #2A2522;
   --color-warm-brown: #1E1B18;
   --color-warm-gray: #6B6460;
-  --color-warm-gray-light: #9B958F;
+  --color-warm-gray-light: #B0AAA4;
 
   --font-display: "Playfair Display", serif;
   --font-body: "Inter", sans-serif;
@@ -95,14 +95,23 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ── Smooth scroll + hidden scrollbar ── */
+/* ── Smooth scroll + styled scrollbar ── */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ring) transparent;
 }
-html::-webkit-scrollbar { display: none; }
+html::-webkit-scrollbar {
+  width: 4px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  background-color: var(--ring);
+  border-radius: 9999px;
+}
 
 /* ── Selection ── */
 ::selection { background-color: #F5E6D8; color: #2A2522; }
@@ -124,7 +133,7 @@ html.dark ::selection { background-color: #5A3A20; color: #FAF7F2; }
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.animate-marquee { animation: marquee 25s linear infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
 
 /* ── Glassmorphism utilities ── */
 .glass {
@@ -252,6 +261,77 @@ input:focus, textarea:focus {
   will-change: transform;
 }
 
+/* ── Custom cursor (desktop only) ── */
+@media (pointer: fine) {
+  .custom-cursor-active,
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+/* ── Glitch animation for 404 ── */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+@keyframes glitch-skew {
+  0%, 100% { transform: skew(0deg); }
+  20% { transform: skew(-1deg); }
+  40% { transform: skew(1deg); }
+  60% { transform: skew(-0.5deg); }
+  80% { transform: skew(0.5deg); }
+}
+.glitch-text {
+  position: relative;
+  animation: glitch-skew 4s ease-in-out infinite;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.glitch-text::before {
+  color: #C2703E;
+  animation: glitch 3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-2px);
+}
+.glitch-text::after {
+  color: #7A8B6F;
+  animation: glitch 3s infinite reverse;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translate(2px);
+}
+
+/* ── Shimmer animation for loading ── */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.shimmer-bar {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(194, 112, 62, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 /* ── Prefers reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -266,4 +346,7 @@ input:focus, textarea:focus {
   .ambient-blob { animation: none; }
   .mask-reveal { clip-path: none; }
   .mask-reveal.revealed { animation: none; clip-path: none; }
+  .glitch-text { animation: none; }
+  .glitch-text::before, .glitch-text::after { animation: none; }
+  .shimmer-bar::after { animation: none; }
 }

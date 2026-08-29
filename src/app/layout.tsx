@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         {children}
+        <CustomCursor />
       </body>
     </html>
   );

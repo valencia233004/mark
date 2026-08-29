@@ -1,17 +1,22 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import WorkflowGraphic from "@/components/WorkflowGraphic";
 import MagneticWrapper from "@/components/MagneticWrapper";
 
+const rotatingPhrases = [
+  "hours every week.",
+  "10+ hours a week.",
+  "time you deserve.",
+];
+
 const headlineLines = [
   { text: "Automation systems that", highlight: false },
   { text: "save your business", highlight: false },
-  { text: "hours every week.", highlight: true },
 ];
 
 const lineVariants = {
@@ -37,11 +42,22 @@ export default function Hero() {
   const photoY = useTransform(scrollYProgress, [0, 1], [0, 30]);
   const graphicY = useTransform(scrollYProgress, [0, 1], [0, 60]);
 
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % rotatingPhrases.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section
       id="hero"
       ref={sectionRef}
       className="relative min-h-screen flex items-center overflow-hidden bg-warm-brown"
+      role="region"
+      aria-label="Hero introduction"
     >
       <div className="absolute inset-0 opacity-[0.04] hero-grid-pattern" aria-hidden="true" />
 
@@ -59,7 +75,7 @@ export default function Hero() {
               {headlineLines.map((line, i) => (
                 <motion.span
                   key={i}
-                  className={`block ${line.highlight ? "text-amber-500" : ""}`}
+                  className="block"
                   custom={i}
                   initial="hidden"
                   animate="visible"
@@ -68,6 +84,46 @@ export default function Hero() {
                   {line.text}
                 </motion.span>
               ))}
+              {/* Highlighted rotating line */}
+              <motion.span
+                className="block relative"
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={lineVariants}
+              >
+                <span className="relative inline-block">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={phraseIndex}
+                      className="inline-block text-[calc(1em+0.2rem)]"
+                      style={{
+                        background: "linear-gradient(90deg, #C2703E, #D4A574)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    >
+                      {rotatingPhrases[phraseIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                  {/* Animated underline */}
+                  <motion.span
+                    className="absolute bottom-0 left-0 h-[2px] rounded-full"
+                    style={{
+                      background: "linear-gradient(90deg, #C2703E, #D4A574)",
+                    }}
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                    aria-hidden="true"
+                  />
+                </span>
+              </motion.span>
             </h1>
 
             <motion.p

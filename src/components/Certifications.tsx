@@ -7,6 +7,7 @@ import ImageWithFallback from "@/components/ImageWithFallback";
 import { Clock } from "lucide-react";
 import TiltCard from "@/components/TiltCard";
 import MaskReveal from "@/components/MaskReveal";
+import SectionEyebrow from "@/components/SectionEyebrow";
 
 const certifications = [
   { title: "GoHighLevel Certified Admin", image: "/images/certificate-1.jpg" },
@@ -19,13 +20,20 @@ export default function Certifications() {
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section id="certifications" ref={ref} className="py-20 md:py-28 bg-background">
+    <section
+      id="certifications"
+      ref={ref}
+      className="py-20 md:py-28 bg-background"
+      role="region"
+      aria-label="Certifications and credentials"
+    >
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.5 }}
         >
+          <SectionEyebrow number="05" label="CREDENTIALS" />
           <MaskReveal>
             <h2 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
               Certifications

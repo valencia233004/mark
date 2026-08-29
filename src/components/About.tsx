@@ -4,12 +4,17 @@ import { useState } from "react";
 import Image from "next/image";
 import SectionWrapper from "@/components/SectionWrapper";
 import MaskReveal from "@/components/MaskReveal";
+import SectionEyebrow from "@/components/SectionEyebrow";
 
 const toolLogos = [
-  { name: "GoHighLevel", url: "https://cdn.simpleicons.org/gohighlevel/2A2522", glowColor: "hover:drop-shadow-[0_0_8px_rgba(56,178,73,0.5)]" },
-  { name: "n8n", url: "https://cdn.simpleicons.org/n8n/2A2522", glowColor: "hover:drop-shadow-[0_0_8px_rgba(234,79,52,0.5)]" },
-  { name: "Zapier", url: "https://cdn.simpleicons.org/zapier/2A2522", glowColor: "hover:drop-shadow-[0_0_8px_rgba(255,78,23,0.5)]" },
-  { name: "Make", url: "https://cdn.simpleicons.org/make/2A2522", glowColor: "hover:drop-shadow-[0_0_8px_rgba(108,52,219,0.5)]" },
+  { name: "GoHighLevel", url: "https://cdn.simpleicons.org/gohighlevel", brandColor: "rgba(56,178,73,0.05)" },
+  { name: "n8n", url: "https://cdn.simpleicons.org/n8n", brandColor: "rgba(234,79,52,0.05)" },
+  { name: "Zapier", url: "https://cdn.simpleicons.org/zapier/FF4F00", brandColor: "rgba(255,78,23,0.05)" },
+  { name: "Make", url: "https://cdn.simpleicons.org/make", brandColor: "rgba(108,52,219,0.05)" },
+  { name: "Google Sheets", url: "https://cdn.simpleicons.org/googlesheets", brandColor: "rgba(52,168,83,0.05)" },
+  { name: "Slack", url: "https://cdn.simpleicons.org/slack", brandColor: "rgba(74,21,75,0.05)" },
+  { name: "Calendly", url: "https://cdn.simpleicons.org/calendly", brandColor: "rgba(0,107,255,0.05)" },
+  { name: "Airtable", url: "https://cdn.simpleicons.org/airtable", brandColor: "rgba(24,119,242,0.05)" },
 ];
 
 const textSkills = ["CRM Setup", "Workflow Automation"];
@@ -19,25 +24,26 @@ function LogoItem({ logo, ariaHidden = false }: { logo: (typeof toolLogos)[numbe
 
   return (
     <div
-      className="flex items-center gap-3 px-8 transition-transform duration-200 hover:scale-110 hover:-translate-y-0.5 cursor-default"
+      className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-border/50 transition-all duration-200 hover:scale-105 hover:shadow-md hover:border-border cursor-default"
+      style={{ backgroundColor: logo.brandColor }}
       aria-hidden={ariaHidden || undefined}
     >
       {hasError ? (
-        <span className="inline-flex items-center justify-center w-7 h-7 rounded bg-sand dark:bg-muted text-xs font-bold text-muted-foreground">
+        <span className="inline-flex items-center justify-center w-9 h-9 rounded bg-sand dark:bg-muted text-xs font-bold text-muted-foreground">
           {logo.name.charAt(0)}
         </span>
       ) : (
         <Image
           src={logo.url}
           alt={`${logo.name} logo`}
-          width={28}
-          height={28}
+          width={36}
+          height={36}
           unoptimized
-          className={`h-7 w-auto opacity-70 transition-all duration-200 group-hover:opacity-100 ${logo.glowColor} dark:invert`}
+          className="h-9 w-9 opacity-90 transition-opacity duration-200 hover:opacity-100"
           onError={() => setHasError(true)}
         />
       )}
-      <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+      <span className="text-sm font-semibold text-foreground whitespace-nowrap">
         {logo.name}
       </span>
     </div>
@@ -49,9 +55,9 @@ function LogoMarquee() {
 
   return (
     <div className="mt-8 relative overflow-hidden" aria-label="Tools I use" role="region">
-      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-      <div className="group flex w-max animate-marquee hover:[animation-play-state:paused]">
+      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+      <div className="group flex w-max animate-marquee hover:[animation-play-state:paused] gap-4">
         {repeated.map((logo, i) => (
           <LogoItem key={`${logo.name}-${i}`} logo={logo} ariaHidden={i >= toolLogos.length} />
         ))}
@@ -64,6 +70,7 @@ export default function About() {
   return (
     <SectionWrapper id="about" className="py-20 md:py-28 bg-background">
       <div className="mx-auto max-w-3xl px-6">
+        <SectionEyebrow number="01" label="ABOUT ME" />
         <MaskReveal>
           <h2 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             About
